@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三味书屋---小圈子</title>
+    <link rel="stylesheet" href="css/eui.css">
+    <style>
+        #app {
+            background-size: 100% 100%;
+            background-image: url("imgs/back6.png");
+            background-repeat: no-repeat;
+        }
+
+        .index {
+            text-decoration: none;
+            font-size: 20px;
+            font-family: 宋体;
+            color: floralwhite;
+            height: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <!--头部开始-->
+        <el-header style="height: 150px;padding: 0px;">
+            <div style="width: 1200px;margin-left: 700px">
+                <img src="imgs/logo1.png" style="width: 100px;" alt="">
+                <span>
+                   <a href="reg.html" class="index">注册</a>
+                   <a href="login.html" class="index">登录</a>
+                   <a href="home.html" class="index">个人中心</a>
+                </span>
+            </div>
+            <!--导航条开始-->
+            <div style="width: 100%;height: 60px;background-color: #271b29">
+                <el-menu style="width: 1200px;margin: 0 auto"
+                         class="el-menu-demo"
+                         mode="horizontal"
+                         @select="handleSelect"
+                         background-color="#271b29"
+                         text-color="white"
+                         active-text-color="#271b29">
+                    <!--搜索框开始-->
+                    <div style="float: right;margin-top: 15px">
+                        <el-input style="right:50px " size="mini" @keydown.native.enter="search()" v-model="wd"
+                                  placeholder="请输入关键字搜索"></el-input>
+                        <el-button style="position: absolute;right: -20px;top: 11px" type="success" round
+                                   @click="search()" icon="el-icon-search"></el-button>
+                    </div>
+                    <!--搜索框结束-->
+                </el-menu>
+            </div>
+        </el-header><!--头部结束-->
+
+        <el-main style="width: 1000px;margin: 0 auto;height: 1200px">
+            <el-button type="primary" icon="el-icon-edit" circle @click="upload()"></el-button><span style="color: whitesmoke"> 发帖子</span></br></br>
+            <el-row :gutter="20">
+                <el-col span="10" v-for="u in upperarr">
+                    <el-card style="height: 120px;width: 300px;background-image: url('imgs/back4.png');">
+                            <el-row><el-tag type="success">用户：</el-tag>{{u.username}}</el-row></br>
+                            <el-row><el-tag type="success">内容：</el-tag>{{u.text}}</el-row>
+                    </el-card></br></br>
+                </el-col>
+            </el-row>
+        </el-main>
+
+        <el-footer style="padding: 0">
+            <div style="background-color: #8c939d;height: 100px;font-size: 14px;color:whitesmoke;text-align: center;padding: 30px">
+                <p>俞ICP备313---知行苑7舍313备号</p>
+                <p>知行苑7舍-------------------</p>
+                <p>在线地址www.niu313bi.com----</p>
+            </div>
+        </el-footer>
+    </el-container>
+</div>
+<script src="js/vue.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script>
+
+    let v = new Vue({
+        el: "#app",
+        data: function () {
+            return {
+                upperarr: [],
+                wd: '',
+                activeName: '1',
+            }
+        },
+        methods: {
+            handleSelect(index) {
+                location.href = "index.html"
+            },
+            search(index) {
+                location.href = "/result.html?wd=" + v.wd;
+            },
+            handleChange(val) {
+
+            },
+            upload(index){
+                location.href="newtie.html"
+            }
+        },
+        created: function () {
+            axios.get("/select_upper").then(function (response) {
+                v.upperarr = response.data;
+            })
+        }
+    })
+</script>
+</body>
+</html>

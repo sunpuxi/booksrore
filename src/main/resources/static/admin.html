@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <!--引入富文本编辑器相关样式文件-->
+    <link href="https://cdn.staticfile.org/wangeditor5/5.1.23/css/style.min.css" rel="stylesheet">
+
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header height="70px" style="background-color: #386582">
+            <h1 style="color: white;font-size: 30px;margin: 0;
+                            line-height: 70px">
+                后台管理系统
+                <span style="font-size: 20px;float: right">欢迎!
+                    <a href="login.html" style="color: orange">退出登录</a>
+                </span>
+            </h1>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu @select="handleSelect" default-active="1" style="height: 1000px" active-text-color="orange">
+                      <img src="imgs/logo1.png" width="150px">
+                    <el-divider></el-divider>
+                    <el-menu-item index="1">
+                        <template slot="title">
+                            <i class="el-icon-user"></i><span>用户管理</span>
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="2">
+                        <template slot="title">
+                            <i class="el-icon-s-management"></i><span>图书列表</span>
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="3">
+                        <template slot="title">
+                            <i class="el-icon-circle-plus"></i><span>添加图书</span>
+                        </template>
+                    </el-menu-item>
+
+                </el-menu>
+
+            </el-aside>
+            <el-main>
+                <!--用户表格开始-->
+                <el-table v-if="currentIndex==1" :data="userArr">
+                <el-table-column prop="id" type="index" label="编号"></el-table-column>
+                <el-table-column prop="username" label="用户名"></el-table-column>
+                <el-table-column prop="password" label="密码"></el-table-column>
+                    <el-table-column label="管理员">
+                        <template slot-scope="scope">
+                            <el-switch v-model="scope.row.isAdmin"></el-switch>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="money" label="余额"></el-table-column>
+                <el-table-column label="删除">
+                    <template slot-scope="scope">
+                        <!--scope代表每行对应的数据的index属性的下标，它有row的属性，可以直接把整个一行当做对象返回-->
+                        <el-popconfirm @confirm="userdelete(scope.$index,scope.row)"
+                                       title="这段内容确定要删除吗？">
+                            <el-button size="mini" type="danger" slot="reference">删除</el-button>
+                        </el-popconfirm>
+                    </template>
+                </el-table-column>
+
+                </el-table>
+                <!--用户表格结束-->
+                <el-table v-if="currentIndex==2" :data="bookarr">
+                    <el-table-column type="index" label="编号" prop="id"></el-table-column>
+                    <el-table-column label="书名" prop="name" ></el-table-column>
+                    <el-table-column label="分类" prop="catename" ></el-table-column>
+                    <el-table-column label="价格" prop="price"></el-table-column>
+                    <el-table-column label="推荐值" prop="intro"></el-table-column>
+                    <el-table-column label="简介" prop="jianjie"></el-table-column>
+                    <el-table-column label="出版时间" prop="time"></el-table-column>
+                    <el-table-column label="商品图片" width="150">
+                        <template slot-scope="scope">
+
+                            <img :src="scope.row.url" width="150" alt="">
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="删除">
+                        <template slot-scope="scope">
+                            <!--scope代表每行对应的数据的index属性的下标，它有row的属性，可以直接把整个一行当做对象返回-->
+                            <el-popconfirm @confirm="bookdelete(scope.$index,scope.row)"
+                                           title="这段内容确定要删除吗？">
+                                <el-button size="mini" type="danger" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                    <!--*******************************-->
+                    <el-table v-if="currentIndex==3" :data="bookarr">
+                    <el-table-column label="操作">
+                        <!--scope代表每行对应的数据里面的index属性代表下标,
+                        里面的row代表每行对应的数组中的对象-->
+                        <template slot-scope="scope">
+                            <!--confirm确认事件-->
+                            <el-popconfirm @confirm="productdelete(scope.$index, scope.row)"
+                                           title="这是一段内容确定删除吗？">
+                                <el-button size="mini"
+                                           type="danger" slot="reference">删除
+                                </el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                    </el-table>
+                    <!--*******************************-->
+                </el-table>
+
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="js/vue.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                userArr:[],
+                bookarr:[],
+                admin : [{
+                    "adminname":"tom"
+                }],
+                bannerArr:[
+                    {id:1,imgUrl:"imgs/banner1.jpg",
+                    code:"p001",createTime:"2023/5/27 14:00:20"},
+                    {id:2,imgUrl:"imgs/banner2.jpg",
+                        code:"p002",createTime:"2023/5/27 14:00:20"},
+                    {id:3,imgUrl:"imgs/banner3.jpg",
+                        code:"p003",createTime:"2023/5/27 14:00:20"}],
+                contentArr:[],
+                currentIndex:"1"
+            }
+        },
+        methods: {
+            handleSelect(key,keyPath){
+                //key就是点击菜单项的index值
+                v.currentIndex = key;
+                if(key==3)
+                {
+                    location.href="insertbook.html"
+                }
+            },
+            userdelete(index,user)
+            {
+                axios.get("/deletebyname?username="+user.username).then(function (){
+                    v.userArr.splice(index,1)
+                    //splice(下标，长度）表示从index删除下标这个元素
+                })
+            },
+            bookdelete(index,book)
+            {
+                axios.get("/deletebybookname?name="+book.name).then(function (){
+                    v.bookarr.splice(index,1)
+                    //splice(下标，长度）表示从index删除下标这个元素
+                })
+            },
+        },
+        created:function(){
+
+            axios.get("/book/select").then(function(response) {
+                    v.bookarr = response.data;
+            })
+            axios.get("/select_user").then(function(response) {
+                v.userArr = response.data;
+            })
+        }
+    })
+</script>
+</html>

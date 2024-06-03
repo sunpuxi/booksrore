@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三味书屋</title>
+    <link rel="stylesheet" href="css/eui.css">
+    <style>
+        #app {
+            background-size: 100% 100%;
+            background-image: url("imgs/back6.png");
+            background-repeat: no-repeat;
+        }
+
+        .index {
+            text-decoration: none;
+            font-size: 20px;
+            font-family: 宋体;
+            color: floralwhite;
+            height: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <!--头部开始-->
+        <el-header style="height: 150px;padding: 0px;">
+            <div style="width: 1200px;margin-left: 700px">
+                <img src="imgs/logo1.png" style="width: 100px;" alt="">
+                <span>
+                   <a href="reg.html" class="index">注册</a>
+                   <a href="login.html" class="index">登录</a>
+                   <a href="index.html" class="index">入驻</a>
+                   <a href="index.html" class="index">帮助中心</a>
+                </span>
+            </div>
+        </el-header><!--头部结束-->
+
+        <el-main style="width: 1000px;margin: 0 auto">
+            <el-row :gutter="20">
+                <el-col v-for="b in bookarr" span="6">
+                    <el-card style="margin: 10px 0">
+                        <a style="color: #333;text-decoration: none" :href="'/detail.html?id='+b.id">
+                            <img :src="b.url" width="70%" height="100">
+                            <p class="title_p">{{b.title}}</p>
+                        </a>
+                        <el-row :gutter="20">
+                            <el-col span="4">
+                                <!--圆形图片,专门用来显示头像-->
+                                <el-avatar size="small" :src="b.url"></el-avatar>
+                            </el-col>
+                            <el-col span="10">{{b.name}}</el-col>
+                            <el-col span="10">
+                                <span style="float: right;font-size: 12px;color: #ccc ;width: 80px">{{b.catename}}</span>
+                                <span style="float: right;font-size: 12px;color: #ccc;width: 80px">推荐值:{{b.intro}}%</span>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </el-col>
+                
+                <el-col span="6">
+                    <img src="imgs/pay.jpg" width="200" height="200"><br><span style="color: whitesmoke">请扫码购买</span>
+                </el-col>
+            </el-row>
+
+            <el-row :guitter="20">
+                <el-col span="10">
+                    <el-form>
+                        <el-form-item>
+                            收货人姓名:<el-input></el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            联系电话:<el-input></el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            收货地址:<el-input></el-input>
+                        </el-form-item>
+
+                        <el-form-item>
+                            <el-button  type="primary" round>提交</el-button>
+                            <el-button  type="primary" round>重置</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+            </el-row>
+        </el-main>
+
+
+
+        <el-footer style="padding: 0">
+            <div style="background-color: #8c939d;height: 100px;font-size: 14px;color:whitesmoke;text-align: center;padding: 30px">
+                <p>俞ICP备313---知行苑7舍313备号</p>
+                <p>知行苑7舍-------------------</p>
+                <p>在线地址www.niu313bi.com----</p>
+            </div>
+        </el-footer>
+    </el-container>
+</div>
+<script src="js/vue.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script>
+
+    let v = new Vue({
+        el: "#app",
+        data: function () {
+            return {
+                bookarr: [],
+                wd: '',
+            }
+        },
+        methods: {
+        },
+        created: function () {
+            let wd=location.search.split("=")[1];
+            axios.get("/selectres?wd="+wd).then(function (response) {
+                v.bookarr=response.data;
+            })
+        }
+    })
+</script>
+</body>
+</html>

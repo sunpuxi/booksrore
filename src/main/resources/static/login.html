@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <style>
+        .el-textarea__inner,.el-input__inner {
+            background: transparent !important;
+        }
+        #jp . hover{
+            color: darkviolet;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <my-header></my-header>
+    </el-container>
+    <el-main style="background-image: url('imgs/login.gif') ;height: 500px;background-size: cover;background-position: center">
+        <el-card style="width: 500px;height: 400px;margin: 50px auto;bound-position: center">
+            <el-form label-width="80px" style="width: 400px;margin: 50px auto ;">
+                <el-form-item label="用户名">
+                    <el-input placeholder="输入用户名" v-model="loginv.user.username" style="border: black ;border-width: 20px"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input style lang="scss" type="password"  placeholder="输入密码" v-model="loginv.user.password">
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="验证码">
+                    <el-col :span="8">
+                        <el-input  @keydown-native-enter="login()" placeholder="输入验证码" v-model="loginv.code.inputcode">
+                        </el-input>
+                    </el-col>
+                    <el-button type="primary" style="margin:0px 50px;background: none;border: none;color: black" @click="reset()">{{loginv.code.codetext}}</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" style="margin:auto" @click="login()">用户登录</el-button>
+                    <el-button type="primary" style="margin-left:50px" @click="managelogin()">管理员登录</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" id="jp" style="margin-left:30px;background: none;border: none;color: dodgerblue;text-decoration: underline" @click="jump()">没有账号？立即注册！</el-button>
+                </el-form-item>
+
+            </el-form>
+
+        </el-card>
+        <!--食谱开始-->
+
+
+    </el-main>
+    <el-footer style="height: 200px;color: #2f3234" padding="50px 0">
+        <my-footer></my-footer>
+    </el-footer>
+</div>
+<script src="js/vue.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script src="js/my-footer.js"></script>
+<script>
+    let v =new Vue({
+        el:"#app",
+        data:function (){
+            return{
+                user:{
+                    username:"",
+                    password:"",
+                },
+                code:{
+                    codetext:"",
+                    inputcode:"",
+                },
+                loginv: {
+                    user : {
+                        username:"",
+                        password:"",
+                    },
+                    code: {
+                        codetext: "",
+                        inputcode: "",
+                    }
+
+                }
+            }
+        },
+        methods:{
+            login() {
+                axios.post("/login",v.loginv).then(function (response) {
+                    if (response.data==1){
+                        location.href="/index.html"  //登录成功跳转admin.html
+                    }
+                    else if (response.data==2){
+                        v.$message.error("用户名不存在")
+                    }
+                    else if(response.data==3)
+                    {
+                        v.$message.error("验证码错误")
+                    }
+
+                    else {
+                        v.$message.error("密码错误")
+                    }
+                })
+            },
+            managelogin() {
+                location.href="adminlogin.html"
+            },
+            reset(){
+                axios.get("/selectcode").then(function(response) {
+
+                    v.loginv.code = response.data;
+                })
+
+            },
+            jump(){
+                location.href="reg.html"
+            }
+
+        },
+        created:function(){
+            axios.get("/selectcode").then(function(response) {
+                v.loginv.code = response.data;
+            })
+        }
+    })
+</script>
+</body>
+</html>

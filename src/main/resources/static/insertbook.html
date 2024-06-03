@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/eui.css">
+</head>
+<body>
+<div id="app">
+    <el-page-header style="background-color: #0095d7 ;color: white;line-height: 60px" @back="goBack()" content="发布图书页面">
+    </el-page-header>
+
+    <el-divider></el-divider>
+
+    <e-card>
+        <el-form>
+            <el-form-item label="名字" lable-width="80px">
+                <el-input v-model="book.name"></el-input>
+            </el-form-item>
+
+            <el-form-item label="分类" lable-width="80px">
+                <el-input v-model="book.catename"></el-input>
+            </el-form-item>
+
+            <el-form-item label="价格" lable-width="80px">
+                <el-input v-model="book.price"></el-input>
+            </el-form-item>
+
+            <el-form-item label="推荐值" lable-width="80px">
+                <el-input v-model="book.intro"></el-input>
+            </el-form-item>
+            <el-form-item label="简介" lable-width="80px">
+                <el-input v-model="book.jianjie"></el-input>
+            </el-form-item>
+            <el-form-item label="出版时间" lable-width="80px">
+                <el-input v-model="book.time"></el-input>
+            </el-form-item>
+
+            <el-form-item label="图书图片" lable-width="80px">
+                <el-upload action="/upload" name="picFile" :limit="1" list-type="picture-card"
+                           :on-preview="handlePreview"
+                           :on-success="handleSuccess"
+                           :on-remove="handleRemove"><!--limit为上传图片的张数-->
+                    <i class="el-icon-upload2"></i>
+                </el-upload>
+                <el-dialog :visible.sync="dialogVisible">
+                    <img width="100%" ;src="dialogImgeUrl" alt="">
+
+                </el-dialog>
+            </el-form-item>
+        </el-form>
+        <el-button @click="insert()">发布</el-button>
+    </e-card>
+</div>
+<script src="js/vue.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script>
+    let v =new Vue({
+        el :"#app",
+        data:function (){
+            return{
+                dialogImgeUrl:'',
+                dialogVisible:false,
+                book:{
+                    id:"",
+                    url:"",
+                    price:"",
+                    name:"",
+                    catename:"",
+                    intro:"",
+                    jianjie:""
+
+                },
+                bookarr:[]
+            }
+        },
+        methods:{
+            handleRemove(file){
+                axios.get("/remove?name="+file.response).then(function (response) {
+                    console.log("服务器的图片已经删除")
+
+                })
+            },
+            handlePreview(file)
+            {
+                this.dialogImgeUrl = file.url;
+                this.dialogVisible=true;
+            },
+            insert(){
+                if(v.book.url=='')
+                {
+                    alert("不能为空")
+                    return;
+                }
+                axios.post("insert_book1",v.book).then(function (response){
+                    alert(v.book.catename)
+                    alert("上传成功")
+                    location.href="admin.html"
+                })
+            },
+            handleSuccess(response){
+                v.book.url= response;
+            },
+            goBack() {
+                location.href="admin.html"
+            }
+        },
+        created:function (){
+            axios.get("/book/select").then(function (response){
+                v.bookarr=response.data;
+            })
+        }
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <title>个人书架</title>
+    <style>
+        #app {
+            background-size: 100% 100%;
+            background-image: url("imgs/back6.png");
+            background-repeat: no-repeat;
+        }
+        .center {
+            width: 1400px;
+            margin: 0 auto;
+        }
+        #footer_center p {
+            margin: 0;
+        }
+
+        #footer_center h3 {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <my-header></my-header>
+        <h2>我的书架</h2>
+        <h4>添加书籍</h4>
+        <el-form label-width="80px">
+            <el-form-item label="书籍">
+                <el-input placeholder="请输入要添加至书架的书名" v-model="book.name"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="add()">确认添加</el-button>
+            </el-form-item>
+        </el-form>
+        <divider></divider>
+        <i class="el-icon-user-solid"></i>
+        <el-row :gutter="20">
+            <el-col span="6" v-for="b in bookarr" v-show="b.islike===1">
+                <el-card>
+                    <div>
+                        <a :href="'/detail.html?id='+b.id"><img class="b_img" :src="b.url" width="180"
+                                                                height="180" alt="">
+                        </a>
+                    </div>
+                    <div>
+                        <a style="color: #0095d7;text-decoration: none"  :href="'/detail.html?id='+b.id">
+                            <p style="font-size: 15px;margin-top: 0;height: 30px">
+                                价格：{{b.price}}
+                            </p>
+                        </a>
+                        <div style="color: #6c6c6c">
+                            <span>{{b.name}}</span>
+                        </div>
+                    </div>
+                </el-card>
+                </template>
+            </el-col>
+        </el-row>
+        <el-footer style="height: 280px;padding:50px 0">
+            <my-footer></my-footer>
+        </el-footer>
+    </el-container>
+</div>
+</body>
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+<!--引入Axios-->
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<!--引入自己的js文件-->
+<script src="js/my-header.js"></script>
+<script src="js/my-footer.js"></script>
+<script>
+    let v = new Vue({
+        el: "#app",
+
+        data() {
+            return {
+                  bookarr:[],
+                  book:{name:""}
+            };
+        },
+
+        created:function (){
+            axios.get("book/select").then(function (response){
+                v.bookarr=response.data;
+            })
+        },
+        methods: {
+            add() {
+                axios.post("/likeadd", v.book).then(function (response) {
+                    if (response.data == 1) {
+                        alert("添加成功")
+                    }
+                    else if(response.data==2){
+                        v.$message.error("该书籍已在书架中");
+                    }
+                    else{
+                        v.$message.error("出现未知错误，添加失败");
+                    }
+                })
+            },
+
+
+        }
+
+    })
+</script>
+</html>
